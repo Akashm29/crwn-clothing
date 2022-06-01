@@ -3,7 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
-import {getAuth,signInWithRedirect,signInWithPopup,GoogleAuthProvider} from 'firebase/auth';
+import {getAuth,signInWithRedirect,signInWithPopup,GoogleAuthProvider,createUserWithEmailAndPassword} from 'firebase/auth';
 import {getFirestore,doc,getDoc,setDoc} from 'firebase/firestore';
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -33,6 +33,7 @@ export const signInWithGoogleRedirect = () => signInWithRedirect(auth,googleProv
 export const db = getFirestore();
 
 export const createUserDocumentFromAuth = async(userAuth) => {
+  if(!userAuth) return;
   const userDocRef = doc(db,'users',userAuth.uid);
   console.log(userDocRef);
   const userSnapshot = await getDoc(userDocRef);
@@ -61,4 +62,10 @@ export const createUserDocumentFromAuth = async(userAuth) => {
 
 
   //else create user data in collection
+}
+
+
+export const createAuthUserWithEmailAndPassword = async(email,password) => {
+  if(!email || !password) return;
+  return await createUserWithEmailAndPassword(auth,email,password)
 }
