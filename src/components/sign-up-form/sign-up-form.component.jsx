@@ -19,6 +19,10 @@ const SignUpForm = () => {
         console.log(formFields)
     }
 
+    const resetFormFields = () => {
+        setFormFields(defaultFormFields);
+    };
+
     const handleSubmit = async (event) => {
         const { password, confirmPassword, email } = formFields;
         event.preventDefault();
@@ -29,7 +33,7 @@ const SignUpForm = () => {
         try {
             let response = await createAuthUserWithEmailAndPassword(email, password);
             console.log(response);
-            setFormFields(defaultFormFields)
+            resetFormFields()
 
         } catch (error) {
             console.log(error.code)
