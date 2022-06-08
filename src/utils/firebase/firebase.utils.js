@@ -3,7 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
-import {getAuth,signInWithRedirect,signInWithPopup,GoogleAuthProvider,createUserWithEmailAndPassword,signInWithEmailAndPassword} from 'firebase/auth';
+import {getAuth,signInWithRedirect,signInWithPopup,GoogleAuthProvider,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged} from 'firebase/auth';
 import {getFirestore,doc,getDoc,setDoc} from 'firebase/firestore';
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -32,13 +32,13 @@ export const signInWithGooglePopup = () => signInWithPopup(auth,googleProvider);
 export const signInWithGoogleRedirect = () => signInWithRedirect(auth,googleProvider);
 export const db = getFirestore();
 
-export const createUserDocumentFromAuth = async(userAuth) => {
+export const createUserDocumentFromAuth = async(userAuth,additionalInformation = {}) => {
   if(!userAuth) return;
   const userDocRef = doc(db,'users',userAuth.uid);
-  console.log(userDocRef);
+  console.log("userDocRef",userDocRef);
   const userSnapshot = await getDoc(userDocRef);
-  console.log(userSnapshot);
-  console.log(userSnapshot.exists());
+  console.log("userSnapshot",userSnapshot);
+  console.log("userSnapshot.exists()",userSnapshot.exists());
 
   // if user data exists
   if(!userSnapshot.exists()){
@@ -49,7 +49,8 @@ export const createUserDocumentFromAuth = async(userAuth) => {
       await setDoc(userDocRef,{
         displayName,
         email,
-        createdAt
+        createdAt,
+        ...additionalInformation
       })
     }
     catch(error){
@@ -72,4 +73,10 @@ export const createAuthUserWithEmailAndPassword = async(email,password) => {
 export const signInUserWithEmailAndPassword = async(email,password) => {
   if(!email || !password) return;
   return await signInWithEmailAndPassword(auth,email,password)
+}
+
+export const signOutUser = () => signOut(auth)
+
+export const onAuthStateChangedListner = (callback) => {
+  onAuthStateChanged(auth,callback)
 }
