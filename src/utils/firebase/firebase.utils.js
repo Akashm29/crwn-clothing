@@ -1,82 +1,33 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-import {getAuth,signInWithRedirect,signInWithPopup,GoogleAuthProvider,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged} from 'firebase/auth';
-import {getFirestore,doc,getDoc,setDoc} from 'firebase/firestore';
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+import { initializeApp } from 'firebase/app';
+import {
+  getAuth,
+  signInWithRedirect,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from 'firebase/auth';
+
 const firebaseConfig = {
-  apiKey: "AIzaSyBCRRLM4yfLxhY9nC7PBkCSQlLp6aNYCbI",
-  authDomain: "crwn-clothing-db-5af57.firebaseapp.com",
-  projectId: "crwn-clothing-db-5af57",
-  storageBucket: "crwn-clothing-db-5af57.appspot.com",
-  messagingSenderId: "236110151228",
-  appId: "1:236110151228:web:da7554f0a3fb5fc91d4d39",
-  measurementId: "G-RRTHW5PV3M"
+  apiKey: 'AIzaSyDDU4V-_QV3M8GyhC9SVieRTDM4dbiT0Yk',
+  authDomain: 'crwn-clothing-db-98d4d.firebaseapp.com',
+  projectId: 'crwn-clothing-db-98d4d',
+  storageBucket: 'crwn-clothing-db-98d4d.appspot.com',
+  messagingSenderId: '626766232035',
+  appId: '1:626766232035:web:506621582dab103a4d08d6',
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-// Initlize provider
-const googleProvider = new GoogleAuthProvider();
+const firebaseApp = initializeApp(firebaseConfig);
 
-googleProvider.setCustomParameters({
-    prompt: 'select_account'
-})
-// getAuth from firebase
+const provider = new GoogleAuthProvider();
+
+provider.setCustomParameters({
+  prompt: 'select_account',
+});
+
+export const createUserProfileDocument = async (userAuth, additionalData) => {
+  if (!userAuth) return;
+
+  console.log(userAuth);
+};
+
 export const auth = getAuth();
-export const signInWithGooglePopup = () => signInWithPopup(auth,googleProvider);
-export const signInWithGoogleRedirect = () => signInWithRedirect(auth,googleProvider);
-export const db = getFirestore();
-
-export const createUserDocumentFromAuth = async(userAuth,additionalInformation = {}) => {
-  if(!userAuth) return;
-  const userDocRef = doc(db,'users',userAuth.uid);
-  console.log("userDocRef",userDocRef);
-  const userSnapshot = await getDoc(userDocRef);
-  console.log("userSnapshot",userSnapshot);
-  console.log("userSnapshot.exists()",userSnapshot.exists());
-
-  // if user data exists
-  if(!userSnapshot.exists()){
-    const {displayName,email} = userAuth;
-    const createdAt = new Date();
-
-    try{
-      await setDoc(userDocRef,{
-        displayName,
-        email,
-        createdAt,
-        ...additionalInformation
-      })
-    }
-    catch(error){
-      console.log("error creating user",error.message)
-    }
-
-
-  }
-  return userDocRef;
-
-
-  //else create user data in collection
-}
-
-
-export const createAuthUserWithEmailAndPassword = async(email,password) => {
-  if(!email || !password) return;
-  return await createUserWithEmailAndPassword(auth,email,password)
-}
-export const signInUserWithEmailAndPassword = async(email,password) => {
-  if(!email || !password) return;
-  return await signInWithEmailAndPassword(auth,email,password)
-}
-
-export const signOutUser = () => signOut(auth)
-
-export const onAuthStateChangedListner = (callback) => {
-  onAuthStateChanged(auth,callback)
-}
+export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
