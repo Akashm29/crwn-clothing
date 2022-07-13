@@ -1,33 +1,46 @@
 import { initializeApp } from 'firebase/app';
-import {
-  getAuth,
-  signInWithRedirect,
-  signInWithPopup,
-  GoogleAuthProvider,
-} from 'firebase/auth';
+import { getAuth, signInWithRedirect, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDDU4V-_QV3M8GyhC9SVieRTDM4dbiT0Yk',
-  authDomain: 'crwn-clothing-db-98d4d.firebaseapp.com',
-  projectId: 'crwn-clothing-db-98d4d',
-  storageBucket: 'crwn-clothing-db-98d4d.appspot.com',
-  messagingSenderId: '626766232035',
-  appId: '1:626766232035:web:506621582dab103a4d08d6',
+  apiKey: "AIzaSyBCRRLM4yfLxhY9nC7PBkCSQlLp6aNYCbI",
+  authDomain: "crwn-clothing-db-5af57.firebaseapp.com",
+  projectId: "crwn-clothing-db-5af57",
+  storageBucket: "crwn-clothing-db-5af57.appspot.com",
+  messagingSenderId: "236110151228",
+  appId: "1:236110151228:web:da7554f0a3fb5fc91d4d39",
+  measurementId: "G-RRTHW5PV3M"
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
-
 const provider = new GoogleAuthProvider();
-
 provider.setCustomParameters({
-  prompt: 'select_account',
-});
-
-export const createUserProfileDocument = async (userAuth, additionalData) => {
-  if (!userAuth) return;
-
-  console.log(userAuth);
-};
+  prompt: 'select_account'
+})
 
 export const auth = getAuth();
 export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
+
+export const db = getFirestore();
+
+export const createUserDocumentFromAuth = async (userAuth) => {
+  const userDocRef = doc(db, 'users', userAuth.uid);
+  console.log(userDocRef);
+
+  const userSnapshot = await getDoc(userDocRef)
+  console.log(userSnapshot.exists())
+  if (!userSnapshot.exists()) {
+    const { displayName, email } = userAuth;
+    const createdAt = new Date();
+    try {
+      await setDoc(userDocRef, {
+        displayName, email, createdAt
+      })
+
+    } catch (error) {
+      console.log('error creating the user', error.message);
+    }
+  }
+  return userDocRef;
+}
